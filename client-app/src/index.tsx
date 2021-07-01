@@ -2,23 +2,23 @@
 import ReactDOM from 'react-dom';
 import 'semantic-ui-css/semantic.min.css';
 import 'react-calendar/dist/Calendar.css';
+import 'react-toastify/dist/ReactToastify.min.css';
 import './app/layout/styles.css';
 import App from './app/layout/App';
 import reportWebVitals from './reportWebVitals';
 import { store, StoreContext } from './app/stores/Store';
-import { BrowserRouter } from 'react-router-dom';
+import { Router } from 'react-router-dom';
+import { createBrowserHistory } from 'history';
 
+export const history = createBrowserHistory();
 
 //react application contained in here.
 ReactDOM.render(
   <StoreContext.Provider value = {store}>
-    <BrowserRouter>
+    <Router history={history}>
       <App />,
-    </BrowserRouter>
-
+    </Router>
   </StoreContext.Provider>,
-
-
   document.getElementById('root')
 );
 
