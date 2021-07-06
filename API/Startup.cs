@@ -8,10 +8,12 @@ using Application.Activities;
 using Application.Core;
 using FluentValidation.AspNetCore;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,13 +39,21 @@ namespace API
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers().AddFluentValidation(config =>
+            services.AddControllers(opt =>
+            {
+                //adding authorization policy. Ensures every single endpoint in API requires authentication unless we tell it otherwise.
+                //Don't need [Authorize] attribute in controllers anymore.
+                var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+                opt.Filters.Add(new AuthorizeFilter(policy));
+            })
+                .AddFluentValidation(config =>
             {
                 config.RegisterValidatorsFromAssemblyContaining<Create>();
             });
 
             //housekeeping, keeps startup classes tidy by calling method of services list in Extensions file.
             services.AddApplicationServices(_config);
+            services.AddIdentityServices(_config);
 
         }
 
@@ -64,7 +74,8 @@ namespace API
             app.UseRouting();
 
             app.UseCors("CorsPolicy");
-
+            //JWT Token authentication has to go right before Authorization.
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
