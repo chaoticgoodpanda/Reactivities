@@ -1,9 +1,11 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Core;
+using Application.Interfaces;
 using Domain;
 using FluentValidation;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Persistence;
 
 namespace Application.Activities
@@ -28,16 +30,34 @@ namespace Application.Activities
         public class Handler : IRequestHandler<Command, Result<Unit>>
         {
             private readonly DataContext _context;
+
+            private readonly IUserAccessor _userAccessor;
+
             //bring in DataContext so we can persist our changes
-            public Handler(DataContext context)
+            public Handler(DataContext context, IUserAccessor userAccessor)
             {
                 _context = context;
+                _userAccessor = userAccessor;
             }
 
             //<Unit> is an object MediatR provide but doesn't actually have any value -- just a way for MediatR to tell API action is finished.
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
-                //we're not touching the database at this point, just adding it in memory. So not need to use "AddAsync" method.
+                //gets user from user object while using ASP.NET Identity
+                var user = await _context.Users.FirstOrDefaultAsync(x => 
+                    x.UserName == _userAccessor.GetUsername());
+                
+                //create new attendee from the user information obtained from var user variable.
+                var attendee = new ActivityAttendee
+                {
+                    AppUser = user,
+                    Activity = request.Activity,
+                    IsHost = true
+                };
+                
+                //add attendee to activity
+                request.Activity.Attendees.Add(attendee);
+                
                 _context.Activities.Add(request.Activity);
 
                 var result = await _context.SaveChangesAsync() > 0;

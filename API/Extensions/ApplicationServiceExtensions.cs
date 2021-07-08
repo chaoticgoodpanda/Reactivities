@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using Application.Activities;
 using Application.Core;
+using Application.Interfaces;
+using Infrastructure.Security;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -36,8 +38,9 @@ namespace API.Extensions
             });
 
             services.AddMediatR(typeof(List.Handler).Assembly);
-
             services.AddAutoMapper(typeof(MappingProfiles).Assembly);
+            //ability to get currently logged in user's username from anywhere in application
+            services.AddScoped<IUserAccessor, UserAccessor>();
 
             return services;
         }
