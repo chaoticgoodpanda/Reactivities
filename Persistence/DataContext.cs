@@ -13,6 +13,7 @@ namespace Persistence
         public DbSet<Activity> Activities { get; set;}
         //for the join table - need new DbSet every time you want to query data
         public DbSet<ActivityAttendee> ActivityAttendees { get; set; }
+        public DbSet<Photo> Photos { get; set; }
 
         //overrides OnModelCreating method when we don't want to use the convention, but rather our custom setup
         protected override void OnModelCreating(ModelBuilder builder)

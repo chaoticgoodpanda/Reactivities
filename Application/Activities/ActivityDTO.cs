@@ -17,6 +17,6 @@ namespace Application.Activities
         //identifies which attendee is host of activity
         public string HostUsername { get; set; }
         
-        public ICollection<Profile> Attendees { get; set; }
+        public ICollection<AttendeeDTO> Attendees { get; set; }
     }
 }

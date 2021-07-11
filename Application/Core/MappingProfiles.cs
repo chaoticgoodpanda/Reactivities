@@ -19,10 +19,16 @@ namespace Application.Core
                         s => s.Attendees.FirstOrDefault(x => x.IsHost).AppUser.UserName));
             //ActivityDTO has Attendees property - need to map from ActivityAttendee to our Profiles object
             //image is ignored for time being
-            CreateMap<ActivityAttendee, Profiles.Profile>()
+            CreateMap<ActivityAttendee, AttendeeDTO>()
                 .ForMember(d => d.DisplayName, o => o.MapFrom(s => s.AppUser.DisplayName))
                 .ForMember(d => d.Username, o => o.MapFrom(s => s.AppUser.UserName))
-                .ForMember(d => d.Bio, o => o.MapFrom(s => s.AppUser.Bio));
+                .ForMember(d => d.Bio, o => o.MapFrom(s => s.AppUser.Bio))
+                .ForMember(d => d.Image, o => o.MapFrom(s => s.AppUser.Photos.FirstOrDefault(x => x.IsMain).Url));
+                //setting image pulls as well
+                
+            //in order to reset main photos for user profiles
+            CreateMap<AppUser, Profiles.Profile>()
+                .ForMember(d => d.Image, o => o.MapFrom(s => s.Photos.FirstOrDefault(x => x.IsMain).Url));
         }
     }
 }

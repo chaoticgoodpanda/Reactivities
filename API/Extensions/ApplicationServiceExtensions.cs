@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using Application.Activities;
 using Application.Core;
 using Application.Interfaces;
+using Application.Photos;
+using Infrastructure.Photos;
 using Infrastructure.Security;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -41,6 +43,9 @@ namespace API.Extensions
             services.AddAutoMapper(typeof(MappingProfiles).Assembly);
             //ability to get currently logged in user's username from anywhere in application
             services.AddScoped<IUserAccessor, UserAccessor>();
+            services.AddScoped<IPhotoAccessor, PhotoAccessor>();
+            //adding Cloudinary keys from appsettings.json file
+            services.Configure<CloudinarySettings>(config.GetSection("Cloudinary"));
 
             return services;
         }
