@@ -17,5 +17,6 @@ namespace Domain
 
         //initializes Attendees as new List to ensure it's not null (can't add anything to null).
         public ICollection<ActivityAttendee> Attendees { get; set; } = new List<ActivityAttendee>();
+        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
     }
 }

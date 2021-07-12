@@ -35,7 +35,12 @@ namespace API.Extensions
             {
                 opt.AddPolicy("CorsPolicy", policy => 
                 {
-                    policy.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:3000");
+                    policy
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        //for SignalR authorization
+                        .AllowCredentials()
+                        .WithOrigins("http://localhost:3000");
                 });
             });
 
@@ -46,6 +51,8 @@ namespace API.Extensions
             services.AddScoped<IPhotoAccessor, PhotoAccessor>();
             //adding Cloudinary keys from appsettings.json file
             services.Configure<CloudinarySettings>(config.GetSection("Cloudinary"));
+            //Adding SignalR to do real-time chat (RTC) in client
+            services.AddSignalR();
 
             return services;
         }

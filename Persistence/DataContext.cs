@@ -14,6 +14,7 @@ namespace Persistence
         //for the join table - need new DbSet every time you want to query data
         public DbSet<ActivityAttendee> ActivityAttendees { get; set; }
         public DbSet<Photo> Photos { get; set; }
+        public DbSet<Comment> Comments { get; set; }
 
         //overrides OnModelCreating method when we don't want to use the convention, but rather our custom setup
         protected override void OnModelCreating(ModelBuilder builder)
@@ -31,6 +32,11 @@ namespace Persistence
                 .HasOne(u => u.Activity)
                 .WithMany(a => a.Attendees)
                 .HasForeignKey(aa => aa.ActivityId);
+
+            builder.Entity<Comment>()
+                .HasOne(a => a.Activity)
+                .WithMany(c => c.Comments)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -190,4 +190,9 @@ export default class ActivityStore {
             runInAction(() => this.loading = false);
         }
     }
+    
+    //flushes the selectedActivity from memory when navigating to a different activity page to prevent an initial connection error
+    clearSelectedActivity = () => {
+        this.selectedActivity = undefined;
+    }
 }

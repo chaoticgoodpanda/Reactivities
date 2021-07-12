@@ -1,4 +1,5 @@
 using System.Text;
+using System.Threading.Tasks;
 using API.Services;
 using Domain;
 using Infrastructure.Security;
@@ -36,6 +37,25 @@ namespace API.Extensions
                         IssuerSigningKey = key,
                         ValidateIssuer = false,
                         ValidateAudience = false
+                    };
+                    //since SignalR isn't used via controller, can't pass HttpRequest -- have to do it through JWT tokens
+                    opt.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            //gets token from query string we send up with SignalR connection when connecting to SignalR hub
+                            var accessToken = context.Request.Query["access_token"];
+                            //if the path matches the endpoint for SignalR
+                            var path = context.HttpContext.Request.Path;
+                            //...adds token to the context
+                            if (!string.IsNullOrEmpty(accessToken) && (path.StartsWithSegments("/chat")))
+                            {
+                                //enables us to access this JWT token within our Hub context
+                                context.Token = accessToken;
+                            }
+
+                            return Task.CompletedTask;
+                        }
                     };
                 });
 
