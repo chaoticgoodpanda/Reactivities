@@ -9,5 +9,9 @@ namespace Domain
         public string Bio { get; set; }
         public ICollection<ActivityAttendee> Activities { get; set; }
         public ICollection<Photo> Photos { get; set; }
+        //who is the current user following
+        public ICollection<UserFollowing> Followings { get; set; }
+        //who is following the current user
+        public ICollection<UserFollowing> Followers { get; set; }
     }
 }

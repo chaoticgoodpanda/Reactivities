@@ -15,6 +15,8 @@ namespace Persistence
         public DbSet<ActivityAttendee> ActivityAttendees { get; set; }
         public DbSet<Photo> Photos { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<UserFollowing> UserFollowings { get; set; }
+        
 
         //overrides OnModelCreating method when we don't want to use the convention, but rather our custom setup
         protected override void OnModelCreating(ModelBuilder builder)
@@ -37,6 +39,27 @@ namespace Persistence
                 .HasOne(a => a.Activity)
                 .WithMany(c => c.Comments)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<UserFollowing>(b =>
+            {
+                b.HasKey(k => new {k.ObserverId, k.TargetId});
+
+                //tracking a user and everyone they're following
+                b.HasOne(o => o.Observer)
+                    .WithMany(f => f.Followings)
+                    .HasForeignKey(o => o.ObserverId)
+                    //if we delete a user that would delete the entries and followers table for that particular user
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                //tracking a user and everyone who's following *them*
+                b.HasOne(o => o.Target)
+                    .WithMany(f => f.Followers)
+                    .HasForeignKey(o => o.TargetId)
+                    //if we delete a user that would delete the entries and followers table for that particular user
+                    .OnDelete(DeleteBehavior.Cascade);
+
+            });
+
         }
     }
 }

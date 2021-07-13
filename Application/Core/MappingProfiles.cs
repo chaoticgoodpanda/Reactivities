@@ -3,6 +3,7 @@ using Application.Activities;
 using Application.Comments;
 using AutoMapper;
 using Domain;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Application.Core
 {
@@ -10,6 +11,9 @@ namespace Application.Core
     {
         public MappingProfiles()
         {
+            //to be able to pull the token of the current user since cannot inject into constructor MappingProfiles()
+            string currentUsername = null;
+            
             //mapping from an activity (Edit() function) to an activity
             CreateMap<Activity, Activity>();
             //mapping from an Activity to ActivityDTO
@@ -24,12 +28,24 @@ namespace Application.Core
                 .ForMember(d => d.DisplayName, o => o.MapFrom(s => s.AppUser.DisplayName))
                 .ForMember(d => d.Username, o => o.MapFrom(s => s.AppUser.UserName))
                 .ForMember(d => d.Bio, o => o.MapFrom(s => s.AppUser.Bio))
-                .ForMember(d => d.Image, o => o.MapFrom(s => s.AppUser.Photos.FirstOrDefault(x => x.IsMain).Url));
                 //setting image pulls as well
+                .ForMember(d => d.Image, o => o.MapFrom(s => s.AppUser.Photos.FirstOrDefault(x => x.IsMain).Url))
+                .ForMember(d => d.FollowersCount, o => o.MapFrom(s => s.AppUser.Followers.Count))
+                .ForMember(d => d.FollowingCount, o => o.MapFrom(s => s.AppUser.Followings.Count))
+                //checking if the currently logged in user is a follower of this particular other user
+                .ForMember(d => d.Following, o =>
+                    o.MapFrom(s => s.AppUser.Followers.Any(x => x.Observer.UserName == currentUsername)));
                 
             //in order to reset main photos for user profiles
+            //maps observers and targets for followings
             CreateMap<AppUser, Profiles.Profile>()
-                .ForMember(d => d.Image, o => o.MapFrom(s => s.Photos.FirstOrDefault(x => x.IsMain).Url));
+                .ForMember(d => d.Image, o => o.MapFrom(s => s.Photos.FirstOrDefault(x => x.IsMain).Url))
+                .ForMember(d => d.FollowersCount, o => o.MapFrom(s => s.Followers.Count))
+                .ForMember(d => d.FollowingCount, o => o.MapFrom(s => s.Followings.Count))
+                //checking if the currently logged in user is a follower of this particular other user
+                .ForMember(d => d.Following, o =>
+                    o.MapFrom(s => s.Followers.Any(x => x.Observer.UserName == currentUsername)));
+            
             
             CreateMap<Comment, CommentsDTO>()
                 .ForMember(d => d.DisplayName, o => o.MapFrom(s => s.Author.DisplayName))
