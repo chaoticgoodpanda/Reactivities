@@ -4,7 +4,7 @@ import {Activity, ActivityFormValues} from '../models/activity';
 import {history} from "../../index";
 import {store} from "../stores/Store";
 import {User, UserFormValues} from "../models/User";
-import {Photo, Profile } from '../models/Profile';
+import {Photo, Profile, UserActivity } from '../models/Profile';
 import {PaginatedResult} from "../models/Pagination";
 
 const sleep = (delay: number) => {
@@ -107,7 +107,9 @@ const Profiles = {
     updateProfile: (profile:Partial<Profile>) => requests.put(`/profiles`, profile),
     updateFollowing: (username: string) => requests.post(`/follow/${username}`, {}),
     listFollowings: (username: string, predicate: string) => 
-        requests.get<Profile[]>(`/follow/${username}?predicate=${predicate}`)
+        requests.get<Profile[]>(`/follow/${username}?predicate=${predicate}`),
+    listActivities: (username: string, predicate: string) =>
+        requests.get<UserActivity[]>(`/profiles/${username}/activities?predicate=${predicate}`)
 }
 
 const Agent = {

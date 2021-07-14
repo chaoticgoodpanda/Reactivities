@@ -1,7 +1,6 @@
 import { observer } from 'mobx-react-lite';
 import React, { useEffect, useState } from 'react';
 import {Grid, Loader } from 'semantic-ui-react';
-import LoadingComponent from '../../../app/layout/LoadingComponent';
 import { useStore } from '../../../app/stores/Store';
 import ActivityFilters from './ActivityFilters';
 import ActivityList from './ActivityList';
@@ -59,6 +58,6 @@ export default observer(function ActivityDashboard() {
     )
 })
 
-function setPagingParams(arg0: any) {
+/*function setPagingParams(arg0: any) {
     throw new Error('Function not implemented.');
-}
+}*/
