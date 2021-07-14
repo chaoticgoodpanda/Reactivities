@@ -79,6 +79,7 @@ namespace API
                 .FrameAncestors(s => s.Self())
                 .ImageSources(s => s.Self().CustomSources("https://res.cloudinary.com", "blob:"))
                 .ScriptSources(s => s.Self().CustomSources("sha256-1Xd5VbAO++yNbo24/AtILK1tKVB0ixBbThpwpSoR8lk="))
+                .ObjectSources(s => s.Self())
             );
             
             if (env.IsDevelopment())
