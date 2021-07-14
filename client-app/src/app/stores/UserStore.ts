@@ -63,5 +63,11 @@ export default class UserStore {
         if (this.user) this.user.image = image;
     }
     
+    facebookLogin = () => {
+        window.FB.login(response => {
+            console.log(response);
+        }, {scope: 'public_profile,email'})
+    }
+    
 
 }
