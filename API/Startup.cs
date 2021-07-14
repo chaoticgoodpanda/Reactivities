@@ -73,6 +73,12 @@ namespace API
             //app.UseHttpsRedirection();
 
             app.UseRouting();
+            
+            //for npm build - for production
+            //looks for anything in our root folder that has www.html
+            app.UseDefaultFiles();
+            //by default serves static files from wwwroot folder
+            app.UseStaticFiles();
 
             app.UseCors("CorsPolicy");
             //JWT Token authentication has to go right before Authorization.
@@ -84,6 +90,8 @@ namespace API
                 endpoints.MapControllers();
                 //adding SignalR endpoint for real-time chat
                 endpoints.MapHub<ChatHub>("/chat");
+                //create controller with an action called "Index" named "Fallback"
+                endpoints.MapFallbackToController("Index", "Fallback");
             });
 
             

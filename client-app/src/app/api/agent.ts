@@ -13,7 +13,7 @@ const sleep = (delay: number) => {
     })
 }
 
-axios.defaults.baseURL = 'http://localhost:5000/api';
+axios.defaults.baseURL = process.env.REACT_APP_API_URL;
 
 //returns token with every single request when we have a token in our commonStore
 axios.interceptors.request.use(config => {
@@ -24,7 +24,9 @@ axios.interceptors.request.use(config => {
 
 axios.interceptors.response.use(async response => 
     {
-        await sleep(1000);
+        //sleep for 1 sec if in development mode to simulate server lag
+        if(process.env.NODE_ENV === 'development') await sleep(1000);
+        
         //adding pagination to axios interceptor
         const pagination = response.headers['pagination'];
         if (pagination) {
