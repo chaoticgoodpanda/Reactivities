@@ -24,12 +24,19 @@
             },
             "sourceFileMap": {
                 "/Views": "${workspaceFolder}/Views"
-            }
+            },
+            "debugOptions": [
+                "Sudo"
+            ]
         },
         {
             "name": ".NET Core Attach",
             "type": "coreclr",
-            "request": "attach"
-        }
+            "request": "attach",
+            "processId": "${command:pickProcess}",
+            "debugOptions": [
+                "Sudo"
+            ]
+        },
     ]
 }

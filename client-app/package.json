@@ -36,9 +36,9 @@
     "yup": "^0.32.9"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "postbuild": "mv build ../API/wwwroot",
+    "start": "HTTPS=true react-scripts start",
+    "build": "HTTPS=true react-scripts build",
+    "postbuild": "rimraf ../API/wwwroot && mv build ../API/wwwroot",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -65,6 +65,7 @@
     "@types/react-datepicker": "^4.1.1",
     "@types/react-router-dom": "^5.1.7",
     "@types/uuid": "^8.3.0",
-    "@types/yup": "^0.29.11"
+    "@types/yup": "^0.29.11",
+    "rimraf": "^3.0.2"
   }
 }

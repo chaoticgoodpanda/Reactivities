@@ -74,7 +74,7 @@ namespace API.Extensions
                         .AllowAnyHeader()
                         //for SignalR authorization
                         .AllowCredentials()
-                        .WithOrigins("http://localhost:3000");
+                        .WithOrigins("http://localhost:3000", "https://localhost:3000", "http://localhost:5000", "https://localhost:5000");
                 });
             });
 
