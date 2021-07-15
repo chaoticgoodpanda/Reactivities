@@ -84,7 +84,8 @@ namespace API
                         "blob:",
                         "data:",
                         "https://www.facebook.com",
-                        "https://platform.lookaside.fbsbx.com"))
+                        "https://platform.lookaside.fbsbx.com",
+                        "https://platform-lookaside.fbsbx.com"))
                 .ScriptSources(s => s.Self()
                     .CustomSources("sha256-1Xd5VbAO++yNbo24/AtILK1tKVB0ixBbThpwpSoR8lk=",
                         "https://connect.facebook.net",
