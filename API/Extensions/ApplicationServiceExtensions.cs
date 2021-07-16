@@ -4,6 +4,7 @@ using Application.Activities;
 using Application.Core;
 using Application.Interfaces;
 using Application.Photos;
+using Infrastructure.Email;
 using Infrastructure.Photos;
 using Infrastructure.Security;
 using MediatR;
@@ -84,6 +85,8 @@ namespace API.Extensions
             //ability to get currently logged in user's username from anywhere in application
             services.AddScoped<IUserAccessor, UserAccessor>();
             services.AddScoped<IPhotoAccessor, PhotoAccessor>();
+            //add in email sending as service
+            services.AddScoped<EmailSender>();
             //adding Cloudinary keys from appsettings.json file
             services.Configure<CloudinarySettings>(config.GetSection("Cloudinary"));
             //Adding SignalR to do real-time chat (RTC) in client

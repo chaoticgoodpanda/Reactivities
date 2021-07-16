@@ -126,7 +126,7 @@ export default class UserStore {
     private startRefreshTokenTimer(user: User) {
         //the payload is the 2nd part of the token, so [1]
         const jwtToken = JSON.parse(atob(user.token.split('.')[1]));
-        const expires = new Date(jwtToken.xp * 1000);
+        const expires = new Date(jwtToken.exp * 1000);
         //sets timer 30 seconds before it expires (probably want to do a minute or longer in production
         const timeout = expires.getTime() - Date.now() - (60 * 1000);
         //attempt to refresh the token 30 seconds before it expires
