@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using System.Threading.Tasks;
 using API.Services;
@@ -36,7 +37,11 @@ namespace API.Extensions
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey = key,
                         ValidateIssuer = false,
-                        ValidateAudience = false
+                        ValidateAudience = false,
+                        //token validation has a 5-minute lifetime window, even after it expires
+                        ValidateLifetime = true,
+                        //this overrides the 5-minute window, and when token expires, it really expires
+                        ClockSkew = TimeSpan.Zero
                     };
                     //since SignalR isn't used via controller, can't pass HttpRequest -- have to do it through JWT tokens
                     opt.Events = new JwtBearerEvents

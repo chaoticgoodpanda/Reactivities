@@ -18,7 +18,7 @@ namespace API.Extensions
             //formatting as a JsonString with a key = paginationHeader
             response.Headers.Add("Pagination", JsonSerializer.Serialize(paginationHeader));
             //need to explicitly expose this - returning Cors header
-            response.Headers.Add("Access-Control-Expose-Headers", "Pagination");
+            //response.Headers.Add("Access-Control-Expose-Headers", "Pagination");
             
         }
     }

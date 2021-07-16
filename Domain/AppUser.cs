@@ -13,5 +13,7 @@ namespace Domain
         public ICollection<UserFollowing> Followings { get; set; }
         //who is following the current user
         public ICollection<UserFollowing> Followers { get; set; }
+        //we'll have a list we can add a token to for refreshing tokens
+        public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
     }
 }

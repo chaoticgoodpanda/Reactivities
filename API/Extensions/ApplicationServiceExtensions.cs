@@ -74,6 +74,7 @@ namespace API.Extensions
                         .AllowAnyHeader()
                         //for SignalR authorization
                         .AllowCredentials()
+                        .WithExposedHeaders("WWW-Authenticate", "Pagination")
                         .WithOrigins("http://localhost:3000", "https://localhost:3000", "http://localhost:5000", "https://localhost:5000");
                 });
             });

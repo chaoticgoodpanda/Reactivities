@@ -8,6 +8,7 @@ using API.DTOs;
 using API.Services;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +17,6 @@ using Newtonsoft.Json;
 
 namespace API.Controllers
 {
-    [AllowAnonymous]    //allows endpoints in Account controller in order to allow user to login :)
     [ApiController]
     [Route("api/[controller]")]
     public class AccountController : ControllerBase
@@ -41,6 +41,7 @@ namespace API.Controllers
             };
         }
 
+        [AllowAnonymous]    //allows endpoints in Account controller in order to allow user to login :)
         [HttpPost("login")]
         public async Task<ActionResult<UserDTO>> Login(LoginDTO loginDto)
         {
@@ -54,12 +55,15 @@ namespace API.Controllers
 
             if (result.Succeeded)
             {
+                //setting the refreshToken
+                await SetRefreshToken(user);
                 return CreateUserObject(user);
             }
 
             return Unauthorized();
         }
 
+        [AllowAnonymous]    //allows endpoints in Account controller in order to allow user to login :)
         [HttpPost("register")]
         public async Task<ActionResult<UserDTO>> Register(RegisterDTO registerDto)
         {
@@ -85,6 +89,8 @@ namespace API.Controllers
 
             if (result.Succeeded)
             {
+                //setting the refreshToken
+                await SetRefreshToken(user);
                 return CreateUserObject(user);
             }
 
@@ -98,9 +104,13 @@ namespace API.Controllers
             //cannot eagerly load photos using .FindByEmailAsync(). Need to use .Include()
             var user = await _userManager.Users.Include(p => p.Photos)
                 .FirstOrDefaultAsync(x => x.Email == User.FindFirstValue(ClaimTypes.Email));
+            
+            //setting the refreshToken - debatable whether it needs to be in the GetCurrentUser() method b/c sends every time user refreshes browser
+            await SetRefreshToken(user);
             return CreateUserObject(user);
         }
 
+        [AllowAnonymous]    //allows endpoints in Account controller in order to allow user to login :)
         [HttpPost("fbLogin")]
         public async Task<ActionResult<UserDTO>> FacebookLogin(string accessToken)
         {
@@ -147,7 +157,53 @@ namespace API.Controllers
 
             if (!result.Succeeded) return BadRequest("Problem creating Facebook user account.");
 
+            //setting the refreshToken
+            await SetRefreshToken(user);
             return CreateUserObject(user);
+        }
+
+        //Authorize prohibits renewing token if JWT token has expired
+        [Authorize]
+        [HttpPost("refreshToken")]
+        public async Task<ActionResult<UserDTO>> RefreshToken()
+        {
+            var refreshToken = Request.Cookies["refreshToken"];
+            var user = await _userManager.Users.Include(r => r.RefreshTokens)
+                .Include(p => p.Photos)
+                .FirstOrDefaultAsync(x => x.UserName == User.FindFirstValue(ClaimTypes.Name));
+
+            if (user == null) return Unauthorized();
+
+            var oldToken = user.RefreshTokens.SingleOrDefault(x => x.Token == refreshToken);
+
+            if (oldToken != null && !oldToken.IsActive) return Unauthorized();
+
+            //if (oldToken != null) oldToken.Revoked = DateTime.UtcNow;
+            
+            return CreateUserObject(user);
+        }
+
+        //done whenever user logins in or relogins they get a new refreshToken added to their account
+        private async Task SetRefreshToken(AppUser user)
+        {
+            var refreshToken = _tokenService.GenerateRefreshToken();
+            
+            user.RefreshTokens.Add(refreshToken);
+            
+            //save token to database so when it comes time for user to refresh token they can compare new one against one that's stored in DB
+            await _userManager.UpdateAsync(user);
+            
+            //pass token inside a cookie
+            var cookieOptions = new CookieOptions
+            {
+                //refreshtoken not accessible via JavaScript
+                HttpOnly = true,
+                //when token saved in cookie, client sends token up to server w/ every request
+                //token valid for 7 days
+                Expires = DateTime.UtcNow.AddDays(7),
+            };
+            
+            Response.Cookies.Append("refreshToken", refreshToken.Token, cookieOptions);
         }
         
         //helper method for GetCurrentUser() method
