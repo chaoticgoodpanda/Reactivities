@@ -20,11 +20,14 @@ namespace API.Extensions
             IConfiguration config)
         {
             services.AddIdentityCore<AppUser>(opt =>
-            {
-                opt.Password.RequireNonAlphanumeric = false;
-            })
-            .AddEntityFrameworkStores<DataContext>()
-            .AddSignInManager<SignInManager<AppUser>>();
+                {
+                    opt.Password.RequireNonAlphanumeric = false;
+                    opt.SignIn.RequireConfirmedEmail = true;
+                })
+                .AddEntityFrameworkStores<DataContext>()
+                .AddSignInManager<SignInManager<AppUser>>()
+                //allows us to send tokens for e.g. a verified email account
+                .AddDefaultTokenProviders();
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["TokenKey"]));
 

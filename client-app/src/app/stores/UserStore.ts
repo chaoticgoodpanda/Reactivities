@@ -53,14 +53,11 @@ export default class UserStore {
     
     register = async (creds: UserFormValues) => {
         try {
-            const user = await Agent.Account.register(creds);
-            store.commonStore.setToken(user.token);
-            this.startRefreshTokenTimer(user);
-            runInAction(() => this.user = user);
-            history.push('/activities');
+            await Agent.Account.register(creds);
+            //gives us access to the link to resend verification
+            history.push(`/account/registerSuccess?email=${creds.email}`);
             //close the modal after the user is logged in
             store.modalStore.closeModal();
-            console.log(user);
         } catch (error) {
             throw error;
         }
@@ -127,7 +124,7 @@ export default class UserStore {
         //the payload is the 2nd part of the token, so [1]
         const jwtToken = JSON.parse(atob(user.token.split('.')[1]));
         const expires = new Date(jwtToken.exp * 1000);
-        //sets timer 30 seconds before it expires (probably want to do a minute or longer in production
+        //sets timer 60 seconds before it expires (probably want to do a minute or longer in production
         const timeout = expires.getTime() - Date.now() - (60 * 1000);
         //attempt to refresh the token 30 seconds before it expires
         this.refreshTokenTimeout = setTimeout(this.refreshToken, timeout);
